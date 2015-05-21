@@ -8,11 +8,27 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
+var mongo = require('mongoskin');
+var db = mongo.db("mongodb://localhost:27017/delivery_db", {native_parser:true});
+
+
 var app = express();
 
+app.get('/delivery_trucks', function(req, res) {
+    //res.send([{name:'wine1'}, {name:'wine2'}]);
+    db.collection('trucks').find().toArray(function (err, items) {
+        res.json(items);
+    });
+});
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+
+setInterval(function() {
+    console.log(Date.now());
+    for (var i = 0; i < 100000000; i++) {
+    }
+}, 1);
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
