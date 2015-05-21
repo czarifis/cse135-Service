@@ -87,7 +87,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 setInterval(function() {
-    console.log(Date.now());
+    //console.log(Date.now());
     var trucks = [];
     for (var i = 0; i < TRUCKS_NO; i++) {
 
