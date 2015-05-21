@@ -14,21 +14,91 @@ var db = mongo.db("mongodb://localhost:27017/delivery_db", {native_parser:true})
 
 var app = express();
 
+
+app.set('jsonp callback name', 'callback');
+
+var global_trucks;
 app.get('/delivery_trucks', function(req, res) {
-    //res.send([{name:'wine1'}, {name:'wine2'}]);
-    db.collection('trucks').find().toArray(function (err, items) {
-        res.json(items);
-    });
+   // db.collection('trucks').find().toArray(function (err, items) {
+   //     res.jsonp(items);
+   // });
+    res.jsonp(global_trucks);
 });
+
+app.get('/delivery_trucksi', function(req, res) {
+   // db.collection('trucks').find().toArray(function (err, items) {
+   //     res.jsonp(items);
+   // });
+    res.json(global_trucks);
+});
+
+
+var TRUCKS_NO = 100;
+var DELIVERIES_NO = 40;
+
+var createRandomTruck = function (i) {
+    var lat_min = -90,
+        lat_range = 90 - lat_min,
+        lng_min = -180,
+        lng_range = 180 - lng_min;
+
+    var truck_key = "id";
+
+    var deliveries = [];
+
+    for (var k =0;k<DELIVERIES_NO;k++){
+
+        var del = createDeliveries(k);
+        deliveries.push(del);
+    }
+
+    var latitude = lat_min + (Math.random() * lat_range);
+    var longitude = lng_min + (Math.random() * lng_range);
+    var ret = {
+        truck_key: i,
+        coords: {
+            latitude: latitude,
+            longitude: longitude
+        },
+        all_deliveries: deliveries,
+        pending_deliveries : deliveries.length,
+        visible:true
+    };
+    ret[truck_key] = i;
+    return ret;
+};
+
+var createDeliveries = function(j){
+
+    return {
+        delivery_id: j,
+        recipient: 'The White House',
+        //...
+
+        scheduled_time: '14:19',
+        delivered_time: '14:19',
+        item_title: 'item title'+j,
+        item_description: 'blahBlahBlah'
+    };
+};
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 setInterval(function() {
     console.log(Date.now());
-    for (var i = 0; i < 100000000; i++) {
+    var trucks = [];
+    for (var i = 0; i < TRUCKS_NO; i++) {
+
+        var mm = createRandomTruck(i);
+        trucks.push(mm);
+
     }
-}, 1);
+   // var trucks = createRandomTruck()
+
+    global_trucks = trucks;
+}, 1000);
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
